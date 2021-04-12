@@ -45,14 +45,14 @@ class MyRunnable(Runnable):
         # fully_qualified_table_name = '.'.join(filter(None, [catalog_name,  schema_name, table_name]))
         fully_qualified_table_name = f"\"{catalog_name}\".\"{schema_name}\".\"{table_name}\""
 
-        stage_name = 'FEATURE_SNOWFLAKE_EXTERNAL_STAGE' # what if no catalog or schema in the connection when we fetch stages?
+        stage_name = self.config['stage']  # what if no catalog or schema in the connection when we fetch stages?
         fully_qualified_stage_name = f"\"{catalog_name}\".\"{schema_name}\".\"{stage_name}\""
 
         output_path = f"{self.project_key}/{dataset_name}"
 
         executor = SQLExecutor2(dataset=dataset_name)
         iter = executor.query_to_df(f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {fully_qualified_table_name} OVERWRITE = TRUE")
-        return f"{fully_qualified_table_name}##################"
+        return f"{iter}"
 
 
 

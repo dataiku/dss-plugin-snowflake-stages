@@ -26,38 +26,29 @@
     */
     "params": [
         {
-            "name": "parameter1",
-            "label": "User-readable name",
+            "name": "stage",
+            "label": "Snowflake stage",
             "type": "STRING",
-            "description": "Some documentation for parameter1",
+            "description": "Snowflake stage destination",
             "mandatory": true
-        },
-        {
-            "name": "parameter2",
-            "label": "parameter2",
-            "type": "INT",
-            "defaultValue": 42
-            /* Note that standard json parsing will return it as a double in Python (instead of an int), so you need to write
-               int(self.config()['parameter2'])
-            */
-        },
+        }
 
         /* A "SELECT" parameter is a multi-choice selector. Choices are specified using the selectChoice field*/
-        {
-            "name": "parameter8",
-            "label": "parameter8",
-            "type": "SELECT",
-            "selectChoices": [
-                {
-                    "value": "val_x",
-                    "label": "display name for val_x"
-                },
-                {
-                    "value": "val_y",
-                    "label": "display name for val_y"
-                }
-            ]
-        }
+//        {
+//            "name": "parameter8",
+//            "label": "parameter8",
+//            "type": "SELECT",
+//            "selectChoices": [
+//                {
+//                    "value": "val_x",
+//                    "label": "display name for val_x"
+//                },
+//                {
+//                    "value": "val_y",
+//                    "label": "display name for val_y"
+//                }
+//            ]
+//        }
     ],
 
     /* list of required permissions on the project to see/run the runnable */
