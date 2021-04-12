@@ -31,6 +31,12 @@ class MyRunnable(Runnable):
         The progress_callback is a function expecting 1 value: current progress
         """
 
+        mandatory_params = [{"name": "Snowflake stage", "id": "stage"}]
+
+        for param in mandatory_params:
+            if param['id'] not in self.config or not self.config[param['id']]:
+                raise ValueError(f"The parameter '{param['name']}' is not specified")
+
         dataset_name = f"{self.config['input_dataset']}"
 
         # Public API
@@ -44,8 +50,7 @@ class MyRunnable(Runnable):
         table_name = dataset_params['table']
         fully_qualified_table_name = f"\"{catalog_name}\".\"{schema_name}\".\"{table_name}\""
 
-        stage_name = self.config['stage']  # what if no catalog or schema in the connection when we fetch stages?
-        fully_qualified_stage_name = f"\"{catalog_name}\".\"{schema_name}\".\"{stage_name}\""
+        fully_qualified_stage_name = self.config['stage']  # what if no catalog or schema in the connection when we fetch stages?
 
         output_path = f"{self.project_key}/{dataset_name}"
 
