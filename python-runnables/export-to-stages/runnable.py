@@ -42,7 +42,6 @@ class MyRunnable(Runnable):
         catalog_name = dataset_params['catalog'] or connection_definition['params']['db']
         schema_name = dataset_params['schema'] or connection_definition['params']['defaultSchema']
         table_name = dataset_params['table']
-        # fully_qualified_table_name = '.'.join(filter(None, [catalog_name,  schema_name, table_name]))
         fully_qualified_table_name = f"\"{catalog_name}\".\"{schema_name}\".\"{table_name}\""
 
         stage_name = self.config['stage']  # what if no catalog or schema in the connection when we fetch stages?
@@ -53,6 +52,3 @@ class MyRunnable(Runnable):
         executor = SQLExecutor2(dataset=dataset_name)
         iter = executor.query_to_df(f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {fully_qualified_table_name} OVERWRITE = TRUE")
         return f"{iter}"
-
-
-

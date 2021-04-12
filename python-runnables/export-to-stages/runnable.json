@@ -24,13 +24,15 @@
 
     For the full list and for more details, see the documentation: https://doc.dataiku.com/dss/latest/plugins/reference/params.html
     */
+    "paramsPythonSetup": "compute_options.py",
     "params": [
         {
             "name": "stage",
             "label": "Snowflake stage",
-            "type": "STRING",
-            "description": "Snowflake stage destination",
-            "mandatory": true
+            "type": "SELECT",
+            "description": "export destination",
+            "mandatory": true,
+            "getChoicesFromPython": true
         }
 
         /* A "SELECT" parameter is a multi-choice selector. Choices are specified using the selectChoice field*/
