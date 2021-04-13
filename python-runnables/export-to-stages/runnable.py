@@ -4,6 +4,11 @@ import os
 from dataiku import SQLExecutor2, Dataset, api_client
 from dataikuapi.dss.dataset import DSSDataset
 
+
+def error(message):
+    return f"<div class=\"alert alert-error\">{message}</div>"
+
+
 class MyRunnable(Runnable):
     """The base interface for a Python runnable"""
 
@@ -30,18 +35,20 @@ class MyRunnable(Runnable):
         Do stuff here. Can return a string or raise an exception.
         The progress_callback is a function expecting 1 value: current progress
         """
+        dataset_name = f"{self.config['input_dataset']}"
+
+        project = api_client().get_project(self.project_key)
+        dss_dataset = project.get_dataset(dataset_name)
+
+        if dss_dataset.get_settings().type != 'Snowflake':
+            return error(f"'{dss_dataset.name}' is not a Snowflake dataset")
 
         mandatory_params = [{"name": "Snowflake stage", "id": "stage"}]
 
         for param in mandatory_params:
             if param['id'] not in self.config or not self.config[param['id']]:
-                raise ValueError(f"The parameter '{param['name']}' is not specified")
+                return error(f"The parameter '{param['name']}' is not specified")
 
-        dataset_name = f"{self.config['input_dataset']}"
-
-        # Public API
-        project = api_client().get_project(self.project_key)
-        dss_dataset = project.get_dataset(dataset_name)
         dataset_params = dss_dataset.get_settings().get_raw_params()
         connection_definition = api_client().get_connection(dataset_params['connection']).get_definition()
 

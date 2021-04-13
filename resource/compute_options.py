@@ -7,7 +7,12 @@ def do(payload, config, plugin_config, inputs):
 
         project = api_client().get_project(project_key)
         dss_dataset = project.get_dataset(dataset_name)
+
+        if dss_dataset.get_settings().type != 'Snowflake':
+            return {"choices": [{"value": None, "label": "⚠️ Invalid input dataset"}]}
+
         dataset_params = dss_dataset.get_settings().get_raw_params()
+
         connection_definition = api_client().get_connection(dataset_params['connection']).get_definition()
         catalog_name = dataset_params['catalog'] or connection_definition['params']['db']
         schema_name = dataset_params['schema'] or connection_definition['params']['defaultSchema']
