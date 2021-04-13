@@ -9,9 +9,9 @@ def qualify_stage_name(stage_tuple):
 
 
 def do(payload, config, plugin_config, inputs):
+    dataset_name = config['input_dataset']
     if payload['parameterName'] == 'stage':
         project_key = default_project_key()
-        dataset_name = f"{config['input_dataset']}"
 
         project = api_client().get_project(project_key)
         dss_dataset = project.get_dataset(dataset_name)
@@ -23,3 +23,5 @@ def do(payload, config, plugin_config, inputs):
         stage_iter = executor.query_to_iter("SHOW STAGES")
         choices = [{"value": qualify_stage_name(stage_tuple), "label": qualify_stage_name(stage_tuple)} for stage_tuple in stage_iter.iter_tuples()]
         return {"choices": choices}
+    if payload['parameterName'] == 'dataset':  # this param is only used to display the dataset name to the user in the macro modal
+        return {"choices": [{"value": "default", "label": dataset_name}]}

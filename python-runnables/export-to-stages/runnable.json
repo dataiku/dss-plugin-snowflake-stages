@@ -23,6 +23,15 @@
     */
     "paramsPythonSetup": "compute_dynamic_params.py",
     "params": [
+        { // This param is only used to display the dataset name to the user in the macro modal
+            "name": "dataset",
+            "label": "Dataset to export",
+            "description": "select in the flow the dataset you want to export",
+            "type": "SELECT",
+            "mandatory": true,
+            "getChoicesFromPython": true,
+            "defaultValue": "default" // the dataset name comes from the "default" entry label defined in the Python function
+        },
         {
             "name": "stage",
             "label": "Snowflake stage",
