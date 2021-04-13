@@ -30,7 +30,6 @@
             "name": "stage",
             "label": "Snowflake stage",
             "type": "SELECT",
-            "description": "export destination",
             "mandatory": true,
             "getChoicesFromPython": true
         }

@@ -1,12 +1,31 @@
 # This file is the actual code for the Python runnable export-to-stages
-from dataiku.runnables import Runnable
 import os
-from dataiku import SQLExecutor2, Dataset, api_client
-from dataikuapi.dss.dataset import DSSDataset
+
+from dataiku import SQLExecutor2, api_client
+from dataiku.runnables import Runnable
+
+
+def success(message):
+    return f"<div class=\"alert alert-success\">{message}</div>"
 
 
 def error(message):
     return f"<div class=\"alert alert-error\">{message}</div>"
+
+
+def resolve_table_name(dataset_params):
+    catalog_name = dataset_params['catalog']
+    schema_name = dataset_params['schema']
+    table_name = dataset_params['table']
+    if catalog_name and schema_name:
+        resolved_table_name = f"{catalog_name}.{schema_name}.{table_name}"
+    elif not catalog_name and schema_name:
+        resolved_table_name = f"{schema_name}.{table_name}"
+    elif catalog_name and not schema_name:
+        resolved_table_name = f"{catalog_name}..{table_name}"
+    else:
+        resolved_table_name = table_name
+    return resolved_table_name
 
 
 class MyRunnable(Runnable):
@@ -49,18 +68,10 @@ class MyRunnable(Runnable):
             if param['id'] not in self.config or not self.config[param['id']]:
                 return error(f"The parameter '{param['name']}' is not specified")
 
-        dataset_params = dss_dataset.get_settings().get_raw_params()
-        connection_definition = api_client().get_connection(dataset_params['connection']).get_definition()
-
-        catalog_name = dataset_params['catalog'] or connection_definition['params']['db']
-        schema_name = dataset_params['schema'] or connection_definition['params']['defaultSchema']
-        table_name = dataset_params['table']
-        fully_qualified_table_name = f"\"{catalog_name}\".\"{schema_name}\".\"{table_name}\""
-
-        fully_qualified_stage_name = self.config['stage']  # what if no catalog or schema in the connection when we fetch stages?
-
+        fully_qualified_stage_name = self.config['stage']
         output_path = f"{self.project_key}/{dataset_name}"
+        dataset_params = dss_dataset.get_settings().get_raw_params()
 
         executor = SQLExecutor2(dataset=dataset_name)
-        iter = executor.query_to_df(f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {fully_qualified_table_name} OVERWRITE = TRUE")
-        return f"{iter}"
+        executor.query_to_df(f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {resolve_table_name(dataset_params)} OVERWRITE = TRUE")
+        return success(f"{dataset_name} successfully exported to {fully_qualified_stage_name}")

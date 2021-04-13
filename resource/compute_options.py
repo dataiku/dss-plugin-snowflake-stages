@@ -1,4 +1,12 @@
-from dataiku import SQLExecutor2, Dataset, api_client, default_project_key
+from dataiku import SQLExecutor2, api_client, default_project_key
+
+
+def qualify_stage_name(stage_tuple):
+    catalog_column_index = 2
+    schema_column_index = 3
+    stage_column_index = 1
+    return f"{stage_tuple[catalog_column_index]}.{stage_tuple[schema_column_index]}.{stage_tuple[stage_column_index]}"
+
 
 def do(payload, config, plugin_config, inputs):
     if payload['parameterName'] == 'stage':
@@ -11,13 +19,7 @@ def do(payload, config, plugin_config, inputs):
         if dss_dataset.get_settings().type != 'Snowflake':
             return {"choices": [{"value": None, "label": "⚠️ Invalid input dataset"}]}
 
-        dataset_params = dss_dataset.get_settings().get_raw_params()
-
-        connection_definition = api_client().get_connection(dataset_params['connection']).get_definition()
-        catalog_name = dataset_params['catalog'] or connection_definition['params']['db']
-        schema_name = dataset_params['schema'] or connection_definition['params']['defaultSchema']
-
         executor = SQLExecutor2(dataset=dataset_name)
         stage_iter = executor.query_to_iter("SHOW STAGES")
-        choices = [{"value": f"{catalog_name}.{schema_name}.{stage[1]}", "label": f"{catalog_name}.{schema_name}.{stage[1]}"} for stage in stage_iter.iter_tuples()]
+        choices = [{"value": qualify_stage_name(stage_tuple), "label": qualify_stage_name(stage_tuple)} for stage_tuple in stage_iter.iter_tuples()]
         return {"choices": choices}
