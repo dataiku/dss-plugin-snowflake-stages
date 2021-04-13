@@ -18,13 +18,13 @@ def resolve_table_name(dataset_params):
     schema_name = dataset_params['schema']
     table_name = dataset_params['table']
     if catalog_name and schema_name:
-        resolved_table_name = f"{catalog_name}.{schema_name}.{table_name}"
+        resolved_table_name = f"\"{catalog_name}\".\"{schema_name}\".\"{table_name}\""
     elif not catalog_name and schema_name:
-        resolved_table_name = f"{schema_name}.{table_name}"
+        resolved_table_name = f"\"{schema_name}\".\"{table_name}\""
     elif catalog_name and not schema_name:
-        resolved_table_name = f"{catalog_name}..{table_name}"
+        resolved_table_name = f"\"{catalog_name}\"..\"{table_name}\""
     else:
-        resolved_table_name = table_name
+        resolved_table_name = f"\"{table_name}\""
     return resolved_table_name
 
 

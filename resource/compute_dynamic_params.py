@@ -5,7 +5,7 @@ def qualify_stage_name(stage_tuple):
     catalog_column_index = 2
     schema_column_index = 3
     stage_column_index = 1
-    return f"{stage_tuple[catalog_column_index]}.{stage_tuple[schema_column_index]}.{stage_tuple[stage_column_index]}"
+    return f"\"{stage_tuple[catalog_column_index]}\".\"{stage_tuple[schema_column_index]}\".\"{stage_tuple[stage_column_index]}\""
 
 
 def do(payload, config, plugin_config, inputs):
