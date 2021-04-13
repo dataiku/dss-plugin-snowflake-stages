@@ -74,4 +74,4 @@ class MyRunnable(Runnable):
 
         executor = SQLExecutor2(dataset=dataset_name)
         executor.query_to_df(f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {resolve_table_name(dataset_params)} OVERWRITE = TRUE")
-        return success(f"The {dataset_name} dataset has been successfully exported to the {fully_qualified_stage_name} stage")
+        return success(f"The <b>{dataset_name}</b> dataset has been successfully exported to the <b>{fully_qualified_stage_name}</b> stage in the <b>{output_path}</b> path.")
