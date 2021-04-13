@@ -2,13 +2,10 @@
 {
     "meta": {
         // label: name of the runnable as displayed, should be short
-        "label": "Custom runnable export-to-stages",
-
-        // description: longer string to help end users understand what this runnable does
-        "description": "",
+        "label": "Export to Snowflake stage",
 
         // icon: must be one of the FontAwesome 3.2.1 icons, complete list here at https://fontawesome.com/v3.2.1/icons/
-        "icon": "icon-puzzle-piece"
+        "icon": "icon-snowflake"
     },
 
     /* whether the runnable's code is untrusted */
@@ -24,7 +21,7 @@
 
     For the full list and for more details, see the documentation: https://doc.dataiku.com/dss/latest/plugins/reference/params.html
     */
-    "paramsPythonSetup": "compute_options.py",
+    "paramsPythonSetup": "compute_dynamic_params.py",
     "params": [
         {
             "name": "stage",
@@ -33,23 +30,6 @@
             "mandatory": true,
             "getChoicesFromPython": true
         }
-
-        /* A "SELECT" parameter is a multi-choice selector. Choices are specified using the selectChoice field*/
-//        {
-//            "name": "parameter8",
-//            "label": "parameter8",
-//            "type": "SELECT",
-//            "selectChoices": [
-//                {
-//                    "value": "val_x",
-//                    "label": "display name for val_x"
-//                },
-//                {
-//                    "value": "val_y",
-//                    "label": "display name for val_y"
-//                }
-//            ]
-//        }
     ],
 
     /* list of required permissions on the project to see/run the runnable */
@@ -65,7 +45,7 @@
     "resultType": "HTML",
 
     /* label to use when the runnable's result is not inlined in the UI (ex: for urls) */
-    "resultLabel": "my production",
+    "resultLabel": "Snowflake stage export",
 
     /* for FILE resultType, the extension to use for the temp file */
     "extension": "txt",
