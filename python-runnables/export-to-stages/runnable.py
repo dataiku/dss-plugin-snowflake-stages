@@ -1,7 +1,7 @@
 # This file is the actual code for the Python runnable export-to-stages
 import os
 
-from dataiku import SQLExecutor2, api_client
+from dataiku import SQLExecutor2, Dataset
 from dataiku.runnables import Runnable
 
 
@@ -13,10 +13,10 @@ def error(message):
     return f"<div class=\"alert alert-error\">{message}</div>"
 
 
-def resolve_table_name(dataset_params):
-    catalog_name = dataset_params['catalog']
-    schema_name = dataset_params['schema']
-    table_name = dataset_params['table']
+def resolve_table_name(dataset_connection_info):
+    catalog_name = dataset_connection_info.get('catalog')
+    schema_name = dataset_connection_info.get('schema')
+    table_name = dataset_connection_info.get('table')
     if catalog_name and schema_name:
         resolved_table_name = f"\"{catalog_name}\".\"{schema_name}\".\"{table_name}\""
     elif not catalog_name and schema_name:
@@ -56,11 +56,10 @@ class MyRunnable(Runnable):
         """
         dataset_name = f"{self.config['input_dataset']}"
 
-        project = api_client().get_project(self.project_key)
-        dss_dataset = project.get_dataset(dataset_name)
+        dataset_connection_info = Dataset(dataset_name).get_location_info()["info"]
 
-        if dss_dataset.get_settings().type != 'Snowflake':
-            return error(f"'{dss_dataset.name}' is not a Snowflake dataset")
+        if dataset_connection_info.get("databaseType") != 'Snowflake':
+            return error(f"'{dataset_name}' is not a Snowflake dataset")
 
         mandatory_params = [{"name": "Snowflake stage", "id": "stage"}]
 
@@ -70,8 +69,7 @@ class MyRunnable(Runnable):
 
         fully_qualified_stage_name = self.config['stage']
         output_path = f"{self.project_key}/{dataset_name}"
-        dataset_params = dss_dataset.get_settings().get_raw_params()
 
         executor = SQLExecutor2(dataset=dataset_name)
-        executor.query_to_df(f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {resolve_table_name(dataset_params)} OVERWRITE = TRUE")
+        executor.query_to_df(f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {resolve_table_name(dataset_connection_info)} OVERWRITE = TRUE")
         return success(f"The <b>{dataset_name}</b> dataset has been successfully exported to the <b>{fully_qualified_stage_name}</b> stage in the <b>{output_path}</b> path.")
