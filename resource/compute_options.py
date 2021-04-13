@@ -21,5 +21,3 @@ def do(payload, config, plugin_config, inputs):
         stage_iter = executor.query_to_iter("SHOW STAGES")
         choices = [{"value": f"{catalog_name}.{schema_name}.{stage[1]}", "label": f"{catalog_name}.{schema_name}.{stage[1]}"} for stage in stage_iter.iter_tuples()]
         return {"choices": choices}
-    else:
-        return []  # TODO user should get an error if reached
