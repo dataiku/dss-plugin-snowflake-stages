@@ -26,7 +26,6 @@
         { // This param is only used to display the dataset name to the user in the macro modal
             "name": "dataset",
             "label": "Dataset to export",
-            "description": "select in the flow the dataset you want to export",
             "type": "SELECT",
             "mandatory": true,
             "getChoicesFromPython": true,
@@ -38,6 +37,14 @@
             "type": "SELECT",
             "mandatory": true,
             "getChoicesFromPython": true
+        },
+        {
+            "name": "overwrite",
+            "label": "Overwrite",
+            "description": "overwrites existing files with matching names",
+            "type": "BOOLEAN",
+            "mandatory": true,
+            "defaultValue":  true
         }
     ],
 

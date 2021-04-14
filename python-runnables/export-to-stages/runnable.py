@@ -70,6 +70,8 @@ class MyRunnable(Runnable):
         fully_qualified_stage_name = self.config['stage']
         output_path = f"{self.project_key}/{dataset_name}"
 
+        overwrite = 'OVERWRITE = TRUE' if self.config["overwrite"] else ''
+
         executor = SQLExecutor2(dataset=dataset_name)
-        executor.query_to_df(f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {resolve_table_name(dataset_connection_info)} OVERWRITE = TRUE")
+        executor.query_to_df(f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {resolve_table_name(dataset_connection_info)} {overwrite}")
         return success(f"The <b>{dataset_name}</b> dataset has been successfully exported to the <b>{fully_qualified_stage_name}</b> stage in the <b>{output_path}</b> path.")
