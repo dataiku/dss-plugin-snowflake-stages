@@ -70,8 +70,11 @@ class MyRunnable(Runnable):
         fully_qualified_stage_name = self.config['stage']
         output_path = f"{self.project_key}/{dataset_name}"
 
+        file_format_param = self.config['file_format']
+        file_format = f"FILE_FORMAT = (FORMAT_NAME = {file_format_param})" if file_format_param else ''
         overwrite = 'OVERWRITE = TRUE' if self.config["overwrite"] else ''
+        sql_copy_query = f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {resolve_table_name(dataset_connection_info)} {file_format} {overwrite}"
 
         executor = SQLExecutor2(dataset=dataset_name)
-        executor.query_to_df(f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {resolve_table_name(dataset_connection_info)} {overwrite}")
+        executor.query_to_df(sql_copy_query)
         return success(f"The <b>{dataset_name}</b> dataset has been successfully exported to the <b>{fully_qualified_stage_name}</b> stage in the <b>{output_path}</b> path.")
