@@ -9,10 +9,6 @@ def success(message):
     return f"<div class=\"alert alert-success\">{message}</div>"
 
 
-def error(message):
-    return f"<div class=\"alert alert-error\">{message}</div>"
-
-
 def resolve_table_name(dataset_connection_info):
     catalog_name = dataset_connection_info.get('catalog')
     schema_name = dataset_connection_info.get('schema')
@@ -54,18 +50,18 @@ class MyRunnable(Runnable):
         Do stuff here. Can return a string or raise an exception.
         The progress_callback is a function expecting 1 value: current progress
         """
-        dataset_name = f"{self.config['input_dataset']}"
+        dataset_name = self.config['input_dataset'] if 'input_dataset' in self.config else self.config['dataset']
 
         dataset_connection_info = Dataset(dataset_name).get_location_info()["info"]
 
         if dataset_connection_info.get("databaseType") != 'Snowflake':
-            return error(f"'{dataset_name}' is not a Snowflake dataset")
+            raise ValueError(f"'{dataset_name}' is not a Snowflake dataset")
 
         mandatory_params = [{"name": "Snowflake stage", "id": "stage"}]
 
         for param in mandatory_params:
             if param['id'] not in self.config or not self.config[param['id']]:
-                return error(f"The parameter '{param['name']}' is not specified")
+                raise ValueError(f"The parameter '{param['name']}' is invalid")
 
         fully_qualified_stage_name = self.config['stage']
         output_path = f"{self.project_key}/{dataset_name}"
