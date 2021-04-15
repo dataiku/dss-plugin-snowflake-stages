@@ -47,6 +47,8 @@ def do(payload, config, plugin_config, inputs):
 
         executor = SQLExecutor2(dataset=dataset_name)
         file_format_iter = executor.query_to_iter("SHOW FILE FORMATS IN ACCOUNT")
-        choices = [{"value": qualify_name(file_format_tuple),
+        # Given that file formats are fully qualified, our "default" option won't override an actual file format
+        choices = [{"value": "default", "label": "default"}] + \
+                  [{"value": qualify_name(file_format_tuple),
                     "label": file_format_label(file_format_tuple)} for file_format_tuple in file_format_iter.iter_tuples()]
         return {"choices": choices}

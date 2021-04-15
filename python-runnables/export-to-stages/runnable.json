@@ -41,11 +41,11 @@
         {
             "name": "file_format",
             "label": "File format",
-            "description": "(optional) file formats defined in your Snowflake account",
+            "description": "file formats defined in your Snowflake account",
             "type": "SELECT",
             "mandatory": true,
             "getChoicesFromPython": true,
-            "defaultValue": "default" // what if actual file format name default?
+            "defaultValue": "default"
         },
         {
             "name": "overwrite",
