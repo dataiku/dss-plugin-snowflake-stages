@@ -5,25 +5,6 @@ from dataiku import SQLExecutor2, Dataset
 from dataiku.runnables import Runnable
 
 
-def success(message):
-    return f"<div class=\"alert alert-success\">{message}</div>"
-
-
-def resolve_table_name(dataset_connection_info):
-    catalog_name = dataset_connection_info.get('catalog')
-    schema_name = dataset_connection_info.get('schema')
-    table_name = dataset_connection_info.get('table')
-    if catalog_name and schema_name:
-        resolved_table_name = f"\"{catalog_name}\".\"{schema_name}\".\"{table_name}\""
-    elif not catalog_name and schema_name:
-        resolved_table_name = f"\"{schema_name}\".\"{table_name}\""
-    elif catalog_name and not schema_name:
-        resolved_table_name = f"\"{catalog_name}\"..\"{table_name}\""
-    else:
-        resolved_table_name = f"\"{table_name}\""
-    return resolved_table_name
-
-
 class MyRunnable(Runnable):
     """The base interface for a Python runnable"""
 
@@ -77,3 +58,27 @@ class MyRunnable(Runnable):
         executor = SQLExecutor2(dataset=dataset_name)
         executor.query_to_df(sql_copy_query)
         return success(f"The <b>{dataset_name}</b> dataset has been successfully exported to the <b>{fully_qualified_stage_name}</b> stage in the <b>{output_path}</b> path.")
+
+
+def success(message):
+    return f"<div class=\"alert alert-success\">{message}</div>"
+
+
+def resolve_table_name(dataset_connection_info):
+    """
+    In Snowflake, the namespace (database and schema) is inferred from the current database (or catalog in DSS terms) and schema in use for the session.
+    We only qualify the table name with the Dataset catalog and schema if explicitly defined. Otherwise, Snowflake will qualify it itself from the session
+    namespace. For more info, see https://docs.snowflake.com/en/sql-reference/name-resolution.html
+    """
+    catalog_name = dataset_connection_info.get('catalog')
+    schema_name = dataset_connection_info.get('schema')
+    table_name = dataset_connection_info.get('table')
+    if catalog_name and schema_name:
+        resolved_table_name = f"\"{catalog_name}\".\"{schema_name}\".\"{table_name}\""
+    elif not catalog_name and schema_name:
+        resolved_table_name = f"\"{schema_name}\".\"{table_name}\""
+    elif catalog_name and not schema_name:
+        resolved_table_name = f"\"{catalog_name}\"..\"{table_name}\""
+    else:
+        resolved_table_name = f"\"{table_name}\""
+    return resolved_table_name
