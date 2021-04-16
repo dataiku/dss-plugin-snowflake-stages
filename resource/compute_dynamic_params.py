@@ -2,6 +2,14 @@ from dataiku import SQLExecutor2, api_client, default_project_key
 
 
 def do(payload, config, plugin_config, inputs):
+    """
+    Currently we can't dynamically recalculate the choices of a param B depending on the value of a param A (see https://app.clubhouse.io/dataiku/story/53713)
+    This is why we have this tradeoff for macros created from a scenario: list all the Snowflake objects, grouped by connection,
+    rather than only the ones from the connection of the selected dataset.
+    Macros directly created from a dataset currently don't let the user change the input dataset, and list the Snowflake objects from the connection of this
+    dataset.
+    """
+
     # if the macro is run from the flow, the input_dataset param is set...
     dataset_name = config.get('input_dataset')
 
@@ -13,6 +21,11 @@ def do(payload, config, plugin_config, inputs):
 
 
 def macro_from_scenario_params(parameter_name):
+    """
+    Params of type `SELECT` don't let us group the choices by connection. This is why we use this hack of displaying the connections as selectable
+    choices and indenting to the right the valid choices. If the user was to select a connection rather than a valid choice, he would then get an error.
+    """
+
     # We start by fetching all snowflake datasets in the current project and group them per connection
     datasets_per_connection = dict()
     for dataset in get_snowflake_datasets():
@@ -100,7 +113,7 @@ def connection_choice(connection):
     }
 
 
-# Given that file formats are fully qualified, our "default" option won't override an actual file format
+# Given that we fully qualify all the file formats, our "default" option won't override an actual file format
 default_format_choice = {
     "value": "default",
     "label": "DEFAULT"

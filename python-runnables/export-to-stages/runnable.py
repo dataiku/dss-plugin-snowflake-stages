@@ -47,11 +47,14 @@ class MyRunnable(Runnable):
 
     def run(self, progress_callback):
         """
-        Do stuff here. Can return a string or raise an exception.
-        The progress_callback is a function expecting 1 value: current progress
+        If successful, we use the method success() to return an HTML message.
+        In case of an error, we don't return the error in such an HTML message but we raise an Error instead
+        so it is considered as a failed step if called from a scenario.
         """
         dataset_name = self.config['input_dataset'] if 'input_dataset' in self.config else self.config['dataset']
 
+        # We use the API `dataiku.core.dataset.Dataset.get_location_info` rather than `dataikuapi.dss.dataset.DSSDataset.get_settings().get_raw_params()`
+        # because it expands variables if any in the connection settings (see https://doc.dataiku.com/dss/latest/variables/index.html)
         dataset_connection_info = Dataset(dataset_name).get_location_info()["info"]
 
         if dataset_connection_info.get("databaseType") != 'Snowflake':
