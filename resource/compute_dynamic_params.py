@@ -53,7 +53,7 @@ def macro_from_scenario_params(parameter_name):
         for connection in datasets_per_connection:
             if multiple_connections:
                 choices += [connection_choice(connection)]
-            choices += [indent(snowflake_object_choice(row)) for row in get_stages(connection=connection)]
+            choices += [indent(stage_choice(row)) for row in get_stages(connection=connection)]
         return {"choices": choices}
 
     if parameter_name == 'file_format':
@@ -61,7 +61,7 @@ def macro_from_scenario_params(parameter_name):
         for connection in datasets_per_connection:
             if multiple_connections:
                 choices += [connection_choice(connection)]
-            choices += [indent(snowflake_object_choice(row)) for row in get_file_formats(connection=connection)]
+            choices += [indent(file_format_choice(row)) for row in get_file_formats(connection=connection)]
         return {"choices": choices}
 
 
@@ -73,7 +73,7 @@ def macro_from_dataset_params(parameter_name, dataset_name):
         if not is_dataset_valid(dataset_name):
             return {"choices": [invalid_dataset_choice]}
 
-        choices = [snowflake_object_choice(row) for row in get_stages(dataset=dataset_name)]
+        choices = [stage_choice(row) for row in get_stages(dataset=dataset_name)]
         return {"choices": choices}
 
     if parameter_name == 'file_format':
@@ -81,7 +81,7 @@ def macro_from_dataset_params(parameter_name, dataset_name):
             return {"choices": [invalid_dataset_choice]}
 
         choices = [default_format_choice] + \
-                  [snowflake_object_choice(row) for row in get_file_formats(dataset=dataset_name)]
+                  [file_format_choice(row) for row in get_file_formats(dataset=dataset_name)]
         return {"choices": choices}
 
 
@@ -132,11 +132,23 @@ def dataset_choice(dataset_name):
     }
 
 
-def snowflake_object_choice(row):
+def stage_choice(row):
     catalog = row[2]
     schema = row[3]
     name = row[1]
+    comment = row[9]
     return {
         "value": f"\"{catalog}\".\"{schema}\".\"{name}\"",
-        "label": f"{catalog}.{schema}.{name}"
+        "label": f"{catalog}.{schema}.{name} {'(' + comment + ')' if comment else ''}"
+    }
+
+
+def file_format_choice(row):
+    catalog = row[2]
+    schema = row[3]
+    name = row[1]
+    comment = row[6]
+    return {
+        "value": f"\"{catalog}\".\"{schema}\".\"{name}\"",
+        "label": f"{catalog}.{schema}.{name} {'(' + comment + ')' if comment else ''}"
     }
