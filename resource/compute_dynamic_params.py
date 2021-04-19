@@ -38,7 +38,7 @@ def macro_from_scenario_params(parameter_name):
     multiple_connections = len(datasets_per_connection) > 1
 
     # indent only if we have multiple Snowflake connections
-    indent = lambda choice: {'value': choice['value'], 'label': f"⠀⠀{choice['label']}"} if multiple_connections else lambda choice: choice
+    indent = (lambda choice: {'value': choice['value'], 'label': f"⠀⠀{choice['label']}"}) if multiple_connections else (lambda choice: choice)
 
     if parameter_name == 'dataset':
         choices = []
@@ -118,7 +118,6 @@ default_format_choice = {
     "value": "default",
     "label": "DEFAULT"
 }
-
 
 invalid_dataset_choice = {
     "value": None,
