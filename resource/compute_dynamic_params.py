@@ -53,7 +53,11 @@ def macro_from_scenario_params(parameter_name):
         for connection in datasets_per_connection:
             if multiple_connections:
                 choices += [connection_choice(connection)]
-            choices += [indent(stage_choice(row)) for row in get_stages(connection=connection)]
+            try:
+                choices += [indent(stage_choice(row)) for row in get_stages(connection=connection)]
+            except Exception as e:
+                # TODO: log exception properly
+                choices += [indent(failed_connection("stages"))]
         return {"choices": choices}
 
     if parameter_name == 'file_format':
@@ -61,7 +65,11 @@ def macro_from_scenario_params(parameter_name):
         for connection in datasets_per_connection:
             if multiple_connections:
                 choices += [connection_choice(connection)]
-            choices += [indent(file_format_choice(row)) for row in get_file_formats(connection=connection)]
+            try:
+                choices += [indent(file_format_choice(row)) for row in get_file_formats(connection=connection)]
+            except Exception as e:
+                # TODO: log exception properly
+                choices += [indent(failed_connection("file formats"))]
         return {"choices": choices}
 
 
@@ -73,16 +81,24 @@ def macro_from_dataset_params(parameter_name, dataset_name):
         if not is_dataset_valid(dataset_name):
             return {"choices": [invalid_dataset_choice]}
 
-        choices = [stage_choice(row) for row in get_stages(dataset=dataset_name)]
+        try:
+            choices = [stage_choice(row) for row in get_stages(dataset=dataset_name)]
+        except Exception as e:
+            # TODO: log exception properly
+            choices = [failed_connection("stages")]
         return {"choices": choices}
 
     if parameter_name == 'file_format':
         if not is_dataset_valid(dataset_name):
             return {"choices": [invalid_dataset_choice]}
 
-        choices = [default_format_choice] + \
-                  [file_format_choice(row) for row in get_file_formats(dataset=dataset_name)]
-        return {"choices": choices}
+        try:
+            choices = [default_format_choice] + \
+                      [file_format_choice(row) for row in get_file_formats(dataset=dataset_name)]
+        except Exception as e:
+            # TODO: log exception properly
+            choices = [failed_connection("file formats")]
+    return {"choices": choices}
 
 
 def get_snowflake_datasets():
@@ -110,6 +126,13 @@ def connection_choice(connection):
     return {
         "value": None,
         "label": f"From connection {connection}:"
+    }
+
+
+def failed_connection(what):
+    return {
+        "value": None,
+        "label": f"⚠️ Failed getting {what}"
     }
 
 
