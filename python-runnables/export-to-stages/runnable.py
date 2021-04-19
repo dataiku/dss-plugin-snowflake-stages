@@ -1,7 +1,5 @@
 # This file is the actual code for the Python runnable export-to-stages
-import os
-
-from dataiku import SQLExecutor2, Dataset
+from dataiku import SQLExecutor2, Dataset, set_default_project_key
 from dataiku.runnables import Runnable
 
 
@@ -15,9 +13,9 @@ class MyRunnable(Runnable):
         :param plugin_config: contains the plugin settings
         """
         self.project_key = project_key
-        os.environ['DKU_CURRENT_PROJECT_KEY'] = project_key
         self.config = config
         self.plugin_config = plugin_config
+        set_default_project_key(self.project_key)
 
     def get_progress_target(self):
         """
@@ -28,11 +26,16 @@ class MyRunnable(Runnable):
 
     def run(self, progress_callback):
         """
-        If successful, we use the method success() to return an HTML message.
+        If `run` is successful, we use the method success() to return an HTML message.
         In case of an error, we don't return the error in such an HTML message but we raise an Error instead
         so it is considered as a failed step if called from a scenario.
         """
-        dataset_name = self.config['input_dataset'] if 'input_dataset' in self.config else self.config['dataset']
+        if 'input_dataset' in self.config:
+            # the macro is run from the flow
+            dataset_name = self.config.get('input_dataset')
+        else:
+            # the macro is run from a scenario
+            dataset_name = self.config.get('dataset')
 
         # We use the API `dataiku.core.dataset.Dataset.get_location_info` rather than `dataikuapi.dss.dataset.DSSDataset.get_settings().get_raw_params()`
         # because it expands variables if any in the connection settings (see https://doc.dataiku.com/dss/latest/variables/index.html)
