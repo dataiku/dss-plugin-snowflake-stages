@@ -164,7 +164,7 @@ def stage_choice(row):
     catalog = row[2]
     schema = row[3]
     name = row[1]
-    comment = row[9]
+    comment = row[8]
     return {
         "value": f"\"{catalog}\".\"{schema}\".\"{name}\"",
         "label": f"{catalog}.{schema}.{name} {'(' + comment + ')' if comment else ''}"
