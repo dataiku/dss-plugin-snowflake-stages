@@ -1,4 +1,5 @@
 # This file is the actual code for the Python runnable export-to-stages
+import logging
 from dataiku import SQLExecutor2, Dataset, set_default_project_key
 from dataiku.runnables import Runnable
 
@@ -37,17 +38,24 @@ class MyRunnable(Runnable):
             # the macro is run from a scenario
             dataset_name = self.config.get('dataset')
 
+        if not dataset_name:
+            logging.error('The mandatory param `dataset` is missing or invalid to export dataset to Snowflake stage')
+            raise ValueError(f"The mandatory parameter `Dataset to export` is invalid")
+
         # We use the API `dataiku.core.dataset.Dataset.get_location_info` rather than `dataikuapi.dss.dataset.DSSDataset.get_settings().get_raw_params()`
         # because it expands variables if any in the connection settings (see https://doc.dataiku.com/dss/latest/variables/index.html)
         dataset_connection_info = Dataset(dataset_name).get_location_info()["info"]
 
         if dataset_connection_info.get("databaseType") != 'Snowflake':
+            logging.error('Cannot export non Snowflake dataset `%s.%s` to Snowflake stage', self.project_key, dataset_name)
             raise ValueError(f"'{dataset_name}' is not a Snowflake dataset")
 
         mandatory_params = [{"name": "Snowflake stage", "id": "stage"}]
 
         for param in mandatory_params:
             if param['id'] not in self.config or not self.config[param['id']]:
+                logging.error('The mandatory param `%s` is missing or invalid to export dataset `%s.%s` to Snowflake stage',
+                              param['name'], self.project_key, dataset_name)
                 raise ValueError(f"The parameter '{param['name']}' is invalid")
 
         fully_qualified_stage_name = self.config['stage']
@@ -58,9 +66,16 @@ class MyRunnable(Runnable):
         overwrite = 'OVERWRITE = TRUE' if self.config["overwrite"] else ''
         sql_copy_query = f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {resolve_table_name(dataset_connection_info)} {file_format} {overwrite}"
 
+        logging.info("Exporting dataset `%s.%s` with the copy command: `%s`", self.project_key, dataset_name, sql_copy_query)
+
         executor = SQLExecutor2(dataset=dataset_name)
         executor.query_to_df(sql_copy_query)
-        return success(f"The <b>{dataset_name}</b> dataset has been successfully exported to the <b>{fully_qualified_stage_name}</b> stage in the <b>{output_path}</b> path.")
+
+        logging.info("Successfully exported dataset `%s.%s` to Snowflake stage `%s` in the %s path",
+                      self.project_key, dataset_name, fully_qualified_stage_name, output_path)
+
+        return success(
+            f"The <b>{dataset_name}</b> dataset has been successfully exported to the <b>{fully_qualified_stage_name}</b> stage in the <b>{output_path}</b> path.")
 
 
 def success(message):

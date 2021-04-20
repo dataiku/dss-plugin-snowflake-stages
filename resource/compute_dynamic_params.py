@@ -1,3 +1,4 @@
+import logging
 from dataiku import SQLExecutor2, api_client, default_project_key
 
 
@@ -56,7 +57,7 @@ def macro_from_scenario_params(parameter_name):
             try:
                 choices += [indent(stage_choice(row)) for row in get_stages(connection=connection)]
             except Exception as e:
-                # TODO: log exception properly
+                logging.exception('Error while fetching Snowflake stages on connection `%s`', connection, exc_info=e)
                 choices += [indent(failed_connection("stages"))]
         return {"choices": choices}
 
@@ -68,7 +69,7 @@ def macro_from_scenario_params(parameter_name):
             try:
                 choices += [indent(file_format_choice(row)) for row in get_file_formats(connection=connection)]
             except Exception as e:
-                # TODO: log exception properly
+                logging.exception('Error while fetching Snowflake file formats on connection `%s`', connection, exc_info=e)
                 choices += [indent(failed_connection("file formats"))]
         return {"choices": choices}
 
@@ -84,7 +85,7 @@ def macro_from_dataset_params(parameter_name, dataset_name):
         try:
             choices = [stage_choice(row) for row in get_stages(dataset=dataset_name)]
         except Exception as e:
-            # TODO: log exception properly
+            logging.exception('Error while fetching Snowflake stages for dataset `%s`', dataset_name, exc_info=e)
             choices = [failed_connection("stages")]
         return {"choices": choices}
 
@@ -96,7 +97,7 @@ def macro_from_dataset_params(parameter_name, dataset_name):
             choices = [default_format_choice] + \
                       [file_format_choice(row) for row in get_file_formats(dataset=dataset_name)]
         except Exception as e:
-            # TODO: log exception properly
+            logging.exception('Error while fetching Snowflake file formats for dataset `%s`', dataset_name, exc_info=e)
             choices = [failed_connection("file formats")]
     return {"choices": choices}
 
@@ -115,11 +116,15 @@ def is_dataset_valid(dataset_name):
 
 
 def get_stages(**kwargs):
-    return SQLExecutor2(**kwargs).query_to_iter("SHOW STAGES").iter_tuples()
+    query = "SHOW STAGES"
+    logging.info("Fetching Snowflake stages with %s: `%s`", kwargs, query)
+    return SQLExecutor2(**kwargs).query_to_iter(query).iter_tuples()
 
 
 def get_file_formats(**kwargs):
-    return SQLExecutor2(**kwargs).query_to_iter("SHOW FILE FORMATS IN ACCOUNT").iter_tuples()
+    query = "SHOW FILE FORMATS IN ACCOUNT"
+    logging.info("Fetching Snowflake file formats with %s: `%s`", kwargs, query)
+    return SQLExecutor2(**kwargs).query_to_iter(query).iter_tuples()
 
 
 def connection_choice(connection):
