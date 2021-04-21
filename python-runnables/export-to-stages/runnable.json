@@ -3,9 +3,9 @@
     "meta": {
         // label: name of the runnable as displayed, should be short
         "label": "Export to Snowflake stages",
-
         // icon: must be one of the FontAwesome 3.2.1 icons, complete list here at https://fontawesome.com/v3.2.1/icons/
-        "icon": "icon-snowflake"
+        "icon": "icon-snowflake",
+        "category" : "Snowflake"
     },
 
     /* whether the runnable's code is untrusted */
