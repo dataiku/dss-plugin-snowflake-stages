@@ -39,6 +39,13 @@
             "getChoicesFromPython": true
         },
         {
+            "name": "path",
+            "label": "Output path (optional)",
+            "description": "defaults to \"<project id>/<dataset name>\"",
+            "type": "STRING",
+            "mandatory": false
+        },
+        {
             "name": "file_format",
             "label": "File format",
             "description": "file formats defined in your Snowflake account",

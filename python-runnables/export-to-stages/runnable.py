@@ -53,17 +53,17 @@ class MyRunnable(Runnable):
         mandatory_params = [{"name": "Snowflake stage", "id": "stage"}]
 
         for param in mandatory_params:
-            if param['id'] not in self.config or not self.config[param['id']]:
+            if param['id'] not in self.config or not self.config.get(param['id']):
                 logging.error('The mandatory param `%s` is missing or invalid to export dataset `%s.%s` to Snowflake stage',
                               param['name'], self.project_key, dataset_name)
                 raise ValueError(f"The parameter '{param['name']}' is invalid")
 
-        fully_qualified_stage_name = self.config['stage']
-        output_path = f"{self.project_key}/{dataset_name}"
+        fully_qualified_stage_name = self.config.get('stage')
+        output_path = self.config.get('path') if self.config.get('path') else f"{self.project_key}/{dataset_name}"
 
-        file_format_param = self.config['file_format']
+        file_format_param = self.config.get('file_format')
         file_format = f"FILE_FORMAT = (FORMAT_NAME = {file_format_param})" if file_format_param and file_format_param != 'default' else ''
-        overwrite = 'OVERWRITE = TRUE' if self.config["overwrite"] else ''
+        overwrite = 'OVERWRITE = TRUE' if self.config.get("overwrite") else ''
         sql_copy_query = f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {resolve_table_name(dataset_connection_info)} {file_format} {overwrite}"
 
         logging.info("Exporting dataset `%s.%s` with the copy command: `%s`", self.project_key, dataset_name, sql_copy_query)
