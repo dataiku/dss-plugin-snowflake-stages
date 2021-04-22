@@ -99,7 +99,7 @@ def macro_from_dataset_params(parameter_name, dataset_name):
         except Exception as e:
             logging.exception('Error while fetching Snowflake file formats for dataset `%s`', dataset_name, exc_info=e)
             choices = [failed_connection("file formats")]
-    return {"choices": choices}
+        return {"choices": choices}
 
 
 def get_snowflake_datasets():

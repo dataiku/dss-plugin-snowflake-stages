@@ -75,8 +75,8 @@ class MyRunnable(Runnable):
         executor = SQLExecutor2(dataset=dataset_name)
         executor.query_to_df(sql_copy_query)
 
-        logging.info("Successfully exported dataset `%s.%s` to Snowflake stage `%s` in the %s path",
-                     self.project_key, dataset_name, fully_qualified_stage_name, output_path)
+        logging.info("Successfully exported dataset `%s.%s` in Snowflake stage `%s` to `%s`",
+                     self.project_key, dataset_name, fully_qualified_stage_name, destination)
 
         return success('The dataset has been successfully exported in stage <strong>%s</strong> to <strong>%s_*</strong>'
                        % (fully_qualified_stage_name.replace('"', ''), destination))
