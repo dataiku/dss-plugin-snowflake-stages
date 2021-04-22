@@ -1,13 +1,8 @@
 # Changelog
 
-## Version X.Y.Z - Type of release (*) - YYYY-MM-DD
-- Changes 1 ...
-- Changes 2 ...
-- ...
-
-(*) Possible types of releases
-
-- Initial release
-- Bugfix release
-- Feature release
-- ....
+## [Version 1.0.0](link to release) - Initial release - YYYY-MM-DD
+- `Export to Snowflake stages` action from the flow
+- Scenario step to automate export
+- File format selection
+- Custom path
+- Overwrite option 
