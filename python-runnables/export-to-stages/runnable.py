@@ -59,12 +59,16 @@ class MyRunnable(Runnable):
                 raise ValueError(f"The parameter '{param['name']}' is invalid")
 
         fully_qualified_stage_name = self.config.get('stage')
-        output_path = self.config.get('path') if self.config.get('path') else f"{self.project_key}/{dataset_name}"
 
-        file_format_param = self.config.get('file_format')
-        file_format = f"FILE_FORMAT = (FORMAT_NAME = {file_format_param})" if file_format_param and file_format_param != 'default' else ''
+        output_path = (self.config.get('path') or self.project_key).strip(' ').strip('/')
+        destination = f"{output_path}/{dataset_name}" if output_path else dataset_name
+
+        file_format_param = self.config.get('file_format') or 'default'
+        file_format = '' if file_format_param == 'default' else f"FILE_FORMAT = (FORMAT_NAME = {file_format_param})"
+
         overwrite = 'OVERWRITE = TRUE' if self.config.get("overwrite") else ''
-        sql_copy_query = f"COPY INTO @{fully_qualified_stage_name}/{output_path}/ FROM {resolve_table_name(dataset_connection_info)} {file_format} {overwrite}"
+
+        sql_copy_query = f"COPY INTO @{fully_qualified_stage_name}/{destination} FROM {resolve_table_name(dataset_connection_info)} {file_format} {overwrite}"
 
         logging.info("Exporting dataset `%s.%s` with the copy command: `%s`", self.project_key, dataset_name, sql_copy_query)
 
@@ -72,10 +76,10 @@ class MyRunnable(Runnable):
         executor.query_to_df(sql_copy_query)
 
         logging.info("Successfully exported dataset `%s.%s` to Snowflake stage `%s` in the %s path",
-                      self.project_key, dataset_name, fully_qualified_stage_name, output_path)
+                     self.project_key, dataset_name, fully_qualified_stage_name, output_path)
 
-        return success(
-            f"The <b>{dataset_name}</b> dataset has been successfully exported to the <b>{fully_qualified_stage_name}</b> stage in the <b>{output_path}</b> path.")
+        return success('The dataset has been successfully exported in stage <strong>%s</strong> to <strong>%s_*</strong>'
+                       % (fully_qualified_stage_name.replace('"', ''), destination))
 
 
 def success(message):

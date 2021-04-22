@@ -41,7 +41,7 @@
         {
             "name": "path",
             "label": "Output path (optional)",
-            "description": "defaults to \"<project id>/<dataset name>\"",
+            "description": "defaults to <project id>",
             "type": "STRING",
             "mandatory": false
         },
