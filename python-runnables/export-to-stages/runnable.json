@@ -1,29 +1,13 @@
-/* This file is the descriptor for the python runnable export-to-stages */
 {
     "meta": {
-        // label: name of the runnable as displayed, should be short
         "label": "Export to Snowflake stages",
-        // icon: must be one of the FontAwesome 3.2.1 icons, complete list here at https://fontawesome.com/v3.2.1/icons/
         "icon": "icon-snowflake",
         "category" : "Snowflake"
     },
-
-    /* whether the runnable's code is untrusted */
     "impersonate": false,
-
-
-    /* params:
-    DSS will generate a formular from this list of requested parameters.
-    Your component code can then access the value provided by users using the "name" field of each parameter.
-
-    Available parameter types include:
-    STRING, INT, DOUBLE, BOOLEAN, DATE, SELECT, TEXTAREA, DATASET, DATASET_COLUMN, MANAGED_FOLDER, PRESET and others.
-
-    For the full list and for more details, see the documentation: https://doc.dataiku.com/dss/latest/plugins/reference/params.html
-    */
     "paramsPythonSetup": "compute_dynamic_params.py",
     "params": [
-        { // This param is only used to display the dataset name to the user in the macro modal
+        {
             "name": "dataset",
             "label": "Dataset to export",
             "type": "SELECT",
@@ -63,36 +47,9 @@
             "defaultValue":  true
         }
     ],
-
-    /* list of required permissions on the project to see/run the runnable */
     "permissions": [],
-
-    /* what the code's run() returns:
-       - NONE : no result
-       - HTML : a string that is a html (utf8 encoded)
-       - FOLDER_FILE : a (folderId, path) pair to a file in a folder of this project (json-encoded)
-       - FILE : raw data (as a python string) that will be stored in a temp file by DSS
-       - URL : a url
-     */
     "resultType": "HTML",
-
-    /* label to use when the runnable's result is not inlined in the UI (ex: for urls) */
     "resultLabel": "Snowflake stage export",
-
-    /* for FILE resultType, the extension to use for the temp file */
-    "extension": "txt",
-
-    /* for FILE resultType, the type of data stored in the temp file */
-    "mimeType": "text/plain",
-
-    /* Macro roles define where this macro will appear in DSS GUI. They are used to pre-fill a macro parameter with context.
-
-       Each role consists of:
-        - type: where the macro will be shown
-            * when selecting DSS object(s): DATASET, DATASETS, API_SERVICE, API_SERVICE_VERSION, BUNDLE, VISUAL_ANALYSIS, SAVED_MODEL, MANAGED_FOLDER
-            * in the global project list: PROJECT_MACROS
-        - targetParamsKey(s): name of the parameter(s) that will be filled with the selected object
-    */
     "macroRoles": [
       {
             "type": "DATASET",
