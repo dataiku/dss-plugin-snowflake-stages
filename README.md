@@ -19,25 +19,7 @@ If your DSS built-in Python env doesn't match, please create a [plugin code env]
 
 ## Usage
 
-### Pre-requisites
-
-Before using this plugin, the Snowflake stages must be already created.
-
-This also applies to [custom file formats](https://docs.snowflake.com/en/sql-reference/sql/create-file-format.html) if you wish to use any.
-
-### From your flow
-
-- select a dataset
-- click `Export to Snowflake stages` on the right panel
-- fill the required parameters
-- run the macro.
-
-### From a scenario
-
-- add a `Execute macro` step
-- select the `Export to Snowflake stages` macro
-- fill the required parameters
-- run the scenario.
+See https://www.dataiku.com/dss/plugins/info/snowflake-stages-export.html
 
 ## Release notes
 
