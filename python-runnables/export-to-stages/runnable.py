@@ -4,7 +4,7 @@ from dataiku import SQLExecutor2, Dataset, set_default_project_key
 from dataiku.runnables import Runnable
 
 
-class MyRunnable(Runnable):
+class ExportToStageRunnable(Runnable):
     """The base interface for a Python runnable"""
 
     def __init__(self, project_key, config, plugin_config):
