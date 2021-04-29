@@ -25,7 +25,7 @@
         {
             "name": "path",
             "label": "Output path (optional)",
-            "description": "defaults to <project key>",
+            "description": "defaults to /<project key>",
             "type": "STRING",
             "mandatory": false
         },
