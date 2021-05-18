@@ -1,5 +1,6 @@
 # This file is the actual code for the Python runnable export-to-stages
 import logging
+import os
 from dataiku import SQLExecutor2, Dataset, set_default_project_key
 from dataiku.runnables import Runnable
 
@@ -61,7 +62,7 @@ class ExportToStageRunnable(Runnable):
         fully_qualified_stage_name = self.config.get('stage')
 
         output_path = (self.config.get('path') or self.project_key).strip(' ').strip('/')
-        destination = f"{output_path}/{dataset_name}" if output_path else dataset_name
+        destination = os.path.join(output_path, dataset_name)
 
         file_format_param = self.config.get('file_format') or 'default'
         file_format = '' if file_format_param == 'default' else f"FILE_FORMAT = (FORMAT_NAME = {file_format_param})"
@@ -75,8 +76,7 @@ class ExportToStageRunnable(Runnable):
         executor = SQLExecutor2(dataset=dataset_name)
         executor.query_to_df(sql_copy_query)
 
-        logging.info("Successfully exported dataset `%s.%s` in Snowflake stage `%s` to `%s`",
-                     self.project_key, dataset_name, fully_qualified_stage_name, destination)
+        logging.info(f"Successfully exported dataset `{self.project_key}.{dataset_name}` in Snowflake stage `{fully_qualified_stage_name}` to `{destination}`")
 
         return success('The dataset has been successfully exported in stage <strong>%s</strong> to <strong>%s_*</strong>'
                        % (fully_qualified_stage_name.replace('"', ''), destination))

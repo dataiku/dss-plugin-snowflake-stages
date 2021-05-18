@@ -39,7 +39,9 @@ def macro_from_scenario_params(parameter_name):
     multiple_connections = len(datasets_per_connection) > 1
 
     # indent only if we have multiple Snowflake connections
-    indent = (lambda choice: {'value': choice['value'], 'label': f"  {choice['label']}"}) if multiple_connections else (lambda choice: choice)
+    def do_indentation(choice):
+        return {'value': choice['value'], 'label': f"  {choice['label']}"}
+    indent = do_indentation if multiple_connections else (lambda choice: choice)
 
     if parameter_name == 'dataset':
         choices = []
@@ -105,7 +107,7 @@ def macro_from_dataset_params(parameter_name, dataset_name):
 def get_snowflake_datasets():
     project_key = default_project_key()
     project = api_client().get_project(project_key)
-    return filter(lambda dataset: dataset.type == 'Snowflake', project.list_datasets())
+    return [dataset for dataset in project.list_datasets() if dataset.type == 'Snowflake']
 
 
 def is_dataset_valid(dataset_name):
