@@ -1,0 +1,59 @@
+{
+    "meta": {
+        "label": "Export to Snowflake stages",
+        "icon": "icon-snowflake",
+        "category" : "Snowflake"
+    },
+    "impersonate": false,
+    "paramsPythonSetup": "compute_dynamic_params.py",
+    "params": [
+        {
+            "name": "dataset",
+            "label": "Dataset to export",
+            "type": "SELECT",
+            "mandatory": true,
+            "getChoicesFromPython": true,
+            "defaultValue": "default" // the dataset name comes from the "default" entry label defined in the Python function
+        },
+        {
+            "name": "stage",
+            "label": "Snowflake stage",
+            "type": "SELECT",
+            "mandatory": true,
+            "getChoicesFromPython": true
+        },
+        {
+            "name": "path",
+            "label": "Output path (optional)",
+            "description": "defaults to /<project key>",
+            "type": "STRING",
+            "mandatory": false
+        },
+        {
+            "name": "file_format",
+            "label": "File format",
+            "description": "file formats defined in your Snowflake account",
+            "type": "SELECT",
+            "mandatory": true,
+            "getChoicesFromPython": true,
+            "defaultValue": "default"
+        },
+        {
+            "name": "overwrite",
+            "label": "Overwrite",
+            "description": "overwrites existing files with matching names",
+            "type": "BOOLEAN",
+            "mandatory": true,
+            "defaultValue":  true
+        }
+    ],
+    "permissions": [],
+    "resultType": "HTML",
+    "resultLabel": "Snowflake stage export",
+    "macroRoles": [
+      {
+            "type": "DATASET",
+            "targetParamsKey": "input_dataset"
+        }
+    ]
+}

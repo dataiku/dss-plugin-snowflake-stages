@@ -1,0 +1,15 @@
+{
+    "id": "snowflake-stages-export",
+    "version": "0.0.1",
+    "meta": {
+        "label": "Snowflake stages export",
+        "description": "Export Snowflake datasets to Snowflake stages",
+        "author": "Dataiku (Nicolas Monchy, Allan Francani)",
+        "icon": "icon-snowflake",
+        "tags": ["Snowflake"],
+        "url": "https://www.dataiku.com/dss/plugins/info/snowflake-stages-export.html",
+        "licenseInfo": "Apache Software License",
+        "supportLevel": "TIER2_SUPPORT"
+    }
+}
+
