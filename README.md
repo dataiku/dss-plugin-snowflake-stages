@@ -1,6 +1,6 @@
 # Snowflake stages export
 
-![Support level](https://img.shields.io/badge/support-Tier%202-yellowgreen)
+[![Support level](https://img.shields.io/badge/support-Experimental-yellowgreen)](https://doc.dataiku.com/dss/latest/troubleshooting/support-tiers.html#experimental)
 
 [Snowflake stages](https://docs.snowflake.com/en/sql-reference/ddl-stage.html) are Snowflake objects pointing to a storage location.
 They are used to load and unload data from Snowflake, without passing credentials in the copy command.
